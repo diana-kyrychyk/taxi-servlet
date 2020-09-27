@@ -3,7 +3,7 @@ VALUES (1, 'USER'),
        (2, 'ADMIN');
 
 INSERT INTO users(id, name, phone, password)
-VALUES (1, 'ADMIN', '+380630000000', 'ADMIN');
+VALUES (1, 'ADMIN', '+380630000000', '73acd9a5972130b75066c82595a1fae3');
 
 INSERT INTO users_roles (user_id, role_id)
 VALUES (1, 2);

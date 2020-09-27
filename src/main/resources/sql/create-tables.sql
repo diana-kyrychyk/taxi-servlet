@@ -13,6 +13,7 @@ CREATE TABLE users
     password VARCHAR(255),
     phone    VARCHAR(15),
     discount int8,
+    balance int8,
     PRIMARY KEY (id)
 );
 
