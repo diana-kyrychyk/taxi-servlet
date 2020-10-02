@@ -5,6 +5,6 @@
 </head>
 <body>
 <h1>Resources are not found</h1>
-<img src="static/images/error404.jpg"/>
+<img src="/static/images/error404.jpg"/>
 </body>
 </html>

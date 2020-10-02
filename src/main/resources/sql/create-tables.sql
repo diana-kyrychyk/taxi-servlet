@@ -74,7 +74,6 @@ CREATE TABLE orders
     creation_date        TIMESTAMP,
     user_id              INT,
     waiting_seconds      INT8,
-    order_status         VARCHAR(20),
     PRIMARY KEY (id),
     FOREIGN KEY (driver_id) references drivers (id),
     FOREIGN KEY (departure_address_id) references addresses (id),

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static ua.com.taxi.filter.AuthenticationFilter.LOGGINED_USER_ID;
 import static ua.com.taxi.filter.AuthenticationFilter.LOGGINED_USER_NAME;
 import static ua.com.taxi.filter.AuthenticationFilter.LOGGINED_USER_ROLES;
 
@@ -45,7 +46,8 @@ public class LoginServlet extends HttpServlet {
 
             req.getSession().setAttribute(LOGGINED_USER_NAME, userOptional.get().getName());
             req.getSession().setAttribute(LOGGINED_USER_ROLES, roleNames);
-            resp.sendRedirect("/index.jsp");
+            req.getSession().setAttribute(LOGGINED_USER_ID, userOptional.get().getId());
+            resp.sendRedirect("/");
         } else {
             resp.sendRedirect("/user-login");
         }

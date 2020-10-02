@@ -3,22 +3,27 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page isELIgnored="false" %>
 
-<fmt:setLocale value="${sessionScope.lang}"/>
+<fmt:setLocale value="${sessionScope.lang}" scope="session"/>
 <fmt:setBundle basename="messages"/>
-
 <nav class="navbar navbar-expand-sm bg-dark">
 
     <div class="container-fluid">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link text-white" href="../../index.jsp">Home Page</a>
+                <a class="nav-link text-white" href="/"><fmt:message key="navbar.home"/></a>
             </li>
             <c:if test="${sessionScope.logginedUserName != null && sessionScope.logginedUserRoles.contains('ADMIN')}">
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="/user-list">User List</a>
+                    <a class="nav-link text-white" href="/user-list"><fmt:message key="navbar.userlist"/></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="/order-list">Orders</a>
+                    <a class="nav-link text-white" href="/order-list"><fmt:message key="navbar.orders"/></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="/car-list"><fmt:message key="navbar.carlist"/></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="/driver-list"><fmt:message key="navbar.driverlist"/></a>
                 </li>
 
             </c:if>
@@ -26,18 +31,18 @@
 
         <div>
             <c:if test="${sessionScope.logginedUserName != null && sessionScope.logginedUserRoles.contains('USER')}">
-                <a class="nav-link text-white" href="/order-create">BOOK now</a>
+                <a class="nav-link text-white" href="/order-create"><fmt:message key="navbar.book"/></a>
             </c:if>
 
         </div>
 
         <div style="display: flex; align-items: center;">
             <c:if test="${sessionScope.logginedUserName != null}">
-                <a class="nav-link text-white" href="/user-logout">Logout</a>
+                <a class="nav-link text-white" href="/user-logout"><fmt:message key="navbar.logout"/></a>
             </c:if>
             <c:if test="${sessionScope.logginedUserName == null}">
-                <a class="nav-link text-white" href="/user-login">Login</a>
-                <a class="nav-link text-white" href="/user-registration">Registrate</a>
+                <a class="nav-link text-white" href="/user-login"><fmt:message key="navbar.login"/></a>
+                <a class="nav-link text-white" href="/user-registration"><fmt:message key="navbar.register"/></a>
             </c:if>
 
             <div style="display: flex; flex-direction: column">
