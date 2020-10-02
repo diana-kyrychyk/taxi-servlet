@@ -20,7 +20,7 @@ public class UserDaoImpl implements UserDao {
                 "insert into users (name, phone, password, discount, balance) " +
                         "values (?, ?, ?, ?, ?) ";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(insertUser, PreparedStatement.RETURN_GENERATED_KEYS);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertUser, Statement.RETURN_GENERATED_KEYS);) {
 
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getPhone());

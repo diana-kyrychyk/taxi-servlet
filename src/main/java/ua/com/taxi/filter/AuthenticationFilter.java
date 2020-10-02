@@ -18,12 +18,20 @@ public class AuthenticationFilter extends HttpFilter {
 
     public static final String LOGGINED_USER_ROLES = "logginedUserRoles";
     public static final String LOGGINED_USER_NAME = "logginedUserName";
+    public static final String LOGGINED_USER_ID = "logginedUserId";
 
     static final List<String> adminPages = Arrays.asList(
             "/user-list",
-            "/user-edit");
+            "/user-edit",
+            "/car-list",
+            "/driver-list",
+            "/order-list",
+            "/admin/order-complete",
+            "/admin/order-cancel");
 
-    static final List<String> userPages = Arrays.asList("/index.jsp");
+    static final List<String> userPages = Arrays.asList("/order-create",
+            "/order-confirmation",
+            "/user/order-cancel");
 
     static final List<String> guestPages = Arrays.asList(
             "/index.jsp",

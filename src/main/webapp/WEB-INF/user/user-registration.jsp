@@ -2,6 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <html>
 
@@ -13,6 +14,7 @@
 <body>
 
 <jsp:include page="../include/menu.jsp"/>
+<fmt:setBundle basename="messages"/>
 
 <br>
 
@@ -20,30 +22,30 @@
     <div class="row">
         <div class="col-sm-3"></div>
         <div class="col-sm-6">
-            <h2>Registration</h2>
+            <h2 align="center"><fmt:message key="userregistration.registration"/></h2>
             <form action="user-registration" method="post">
 
                 <div class="form-group">
-                    <label for="name">Name:</label>
-                    <input class="form-control" id="name" placeholder="Please enter your name" name="name">
+                    <label for="name"><fmt:message key="userregistration.name"/></label>
+                    <input class="form-control" id="name" placeholder="<fmt:message key="userregistration.placeholder.name"/>" name="name">
                 </div>
 
                 <div class="form-group">
-                    <label for="phone-number">Phone number:</label>
-                    <input class="form-control" id="phone-number" placeholder="Please enter your new phone number"
+                    <label for="phone-number"><fmt:message key="userregistration.phone"/></label>
+                    <input class="form-control" id="phone-number" placeholder="<fmt:message key="userlogin.placeholder.phone"/>"
                            name="phone">
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input class="form-control" id="password" placeholder="Please enter your new password"
+                    <label for="password"><fmt:message key="userregistration.password"/></label>
+                    <input class="form-control" id="password" placeholder="<fmt:message key="userlogin.placeholder.password"/>"
                            name="password" type="password">
                 </div>
 
 
-                <div class="form-group">
+                <div class="form-group" align="center">
                     <div class="col-sm-offset-3 col-sm-9">
-                        <button type="submit" class="btn btn-success">Create</button>
+                        <button type="submit" class="btn btn-success"><fmt:message key="userregistration.button.create"/></button>
                     </div>
                 </div>
 
