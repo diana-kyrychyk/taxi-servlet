@@ -15,7 +15,6 @@
 
 <jsp:include page="../include/menu.jsp"/>
 <fmt:setBundle basename="messages"/>
-
 <br>
 
 <div class="container">
@@ -27,19 +26,39 @@
 
                 <div class="form-group">
                     <label for="name"><fmt:message key="userregistration.name"/></label>
-                    <input class="form-control" id="name" placeholder="<fmt:message key="userregistration.placeholder.name"/>" name="name">
+                    <input class="form-control" id="name" placeholder="<fmt:message key="userregistration.placeholder.name"/>" name="name" value="${name}">
+
+                    <c:if test="${fieldsErrors != null && fieldsErrors.containsKey('name')}">
+                        <label style="color: red;">${fieldsErrors.get('name')}</label>
+                    </c:if>
                 </div>
 
                 <div class="form-group">
                     <label for="phone-number"><fmt:message key="userregistration.phone"/></label>
                     <input class="form-control" id="phone-number" placeholder="<fmt:message key="userlogin.placeholder.phone"/>"
-                           name="phone">
+                           name="phone" value="${phone}">
+
+                    <c:if test="${fieldsErrors != null && fieldsErrors.containsKey('phone')}">
+                        <label style="color: red;">${fieldsErrors.get('phone')}</label>
+                    </c:if>
                 </div>
 
                 <div class="form-group">
                     <label for="password"><fmt:message key="userregistration.password"/></label>
                     <input class="form-control" id="password" placeholder="<fmt:message key="userlogin.placeholder.password"/>"
                            name="password" type="password">
+                    <c:if test="${fieldsErrors != null && fieldsErrors.containsKey('password')}">
+                        <label style="color: red;">${fieldsErrors.get('password')}</label>
+                    </c:if>
+                </div>
+
+                <div class="form-group">
+                    <label for="password-confirm"><fmt:message key="userregistration.password-repeat"/></label>
+                    <input class="form-control" id="password-confirm" placeholder="<fmt:message key="userregistration.placeholder.password-confirm"/>"
+                           name="password-confirm" type="password">
+                    <c:if test="${fieldsErrors != null && fieldsErrors.containsKey('password-confirm')}">
+                        <label style="color: red;">${fieldsErrors.get('password-confirm')}</label>
+                    </c:if>
                 </div>
 
 
