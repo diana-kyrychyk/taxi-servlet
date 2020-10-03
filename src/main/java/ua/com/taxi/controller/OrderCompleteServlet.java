@@ -19,7 +19,7 @@ public class OrderCompleteServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
         orderService.complete(Integer.valueOf(id));
-        response.sendRedirect("/order-list");
+        response.sendRedirect("/admin/order-list");
     }
 }
 

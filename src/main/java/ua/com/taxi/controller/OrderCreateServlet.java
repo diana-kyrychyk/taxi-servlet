@@ -20,7 +20,7 @@ import java.util.Optional;
 import static java.util.Objects.nonNull;
 import static ua.com.taxi.filter.AuthenticationFilter.LOGGINED_USER_ID;
 
-@WebServlet("/order-create")
+@WebServlet("/user/order-create")
 public class OrderCreateServlet extends HttpServlet {
 
     private static final List<Integer> AVAILABLE_PASSENGER_COUNT_SETS = Arrays.asList(2, 4, 8);
@@ -35,7 +35,7 @@ public class OrderCreateServlet extends HttpServlet {
         Optional<Integer> newOrder = orderService.findByUserAndStatus(userId, OrderStatus.NEW);
 
         if (newOrder.isPresent()) {
-            String url = String.format("/order-confirmation?id=%s", newOrder.get());
+            String url = String.format("/user/order-confirmation?id=%s", newOrder.get());
             resp.sendRedirect(url);
         } else {
 
@@ -64,7 +64,7 @@ public class OrderCreateServlet extends HttpServlet {
 
         int newOrderId = orderService.create(userId, category, selectedPassengersCount, selectedDepartureAddress, selectedArrivalAddress);
 
-        String url = String.format("/order-confirmation?id=%s", newOrderId);
+        String url = String.format("/user/order-confirmation?id=%s", newOrderId);
         resp.sendRedirect(url);
 
     }

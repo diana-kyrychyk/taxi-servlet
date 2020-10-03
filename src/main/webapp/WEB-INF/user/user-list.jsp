@@ -33,7 +33,7 @@
 						</c:forEach>
 					</td>
 					<td>
-						<a href="user-edit?id=${user.id}" class="btn btn-info" role="button">Edit</a>
+						<a href="/admin/user-edit?id=${user.id}" class="btn btn-info" role="button">Edit</a>
 					</td>
 
 				</tr>

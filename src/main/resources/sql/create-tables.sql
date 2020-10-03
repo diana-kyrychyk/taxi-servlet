@@ -14,7 +14,8 @@ CREATE TABLE users
     phone    VARCHAR(15),
     discount int8,
     balance int8,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE(phone)
 );
 
 

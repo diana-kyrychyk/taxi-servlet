@@ -7,11 +7,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class ContentCashFilter extends HttpFilter {
+public class EncodingFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        res.setContentType("text/html");
+        res.setCharacterEncoding("UTF-8");
+        req.setCharacterEncoding("UTF-8");
+
         chain.doFilter(req,res);
     }
+
 }

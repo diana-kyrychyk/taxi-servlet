@@ -77,7 +77,7 @@
 
                 <a href="/user/order-cancel?id=${order.orderId}" class="btn btn-danger" role="button">Cancel</a>
 
-                <form action="order-confirmation" method="post">
+                <form action="/user/order-confirmation" method="post">
                     <input name="orderId" type="hidden" value="${order.orderId}">
                     <input name="carId" type="hidden" value="${order.suggestedCar.id}">
                     <button type="submit" ${order.suggestedCar == null ? 'disabled' : '' } class="btn btn-success"> Confirm</button>
