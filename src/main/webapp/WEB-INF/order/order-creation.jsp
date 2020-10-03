@@ -21,7 +21,7 @@
         <div class="col-sm-3"></div>
         <div class="col-sm-6">
             <h2>Order booking</h2>
-            <form action="order-create" method="post">
+            <form action="/user/order-create" method="post">
 
                 <div class="form-group">
                     <label>Departure Address:</label>

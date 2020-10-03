@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/order-confirmation")
+@WebServlet("/user/order-confirmation")
 public class OrderConfirmationServlet extends HttpServlet {
 
     private OrderService orderService = new OrderServiceImpl();
@@ -34,7 +34,7 @@ public class OrderConfirmationServlet extends HttpServlet {
             orderService.confirmOrder(Integer.valueOf(orderId), Integer.valueOf(carId));
             resp.sendRedirect("/");
         } catch (Exception e) {
-            String url = String.format("/order-confirmation?id=%s", orderId);
+            String url = String.format("/user/order-confirmation?id=%s", orderId);
             resp.sendRedirect(url);
         }
     }

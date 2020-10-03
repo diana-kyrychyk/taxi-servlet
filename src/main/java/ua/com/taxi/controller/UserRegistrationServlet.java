@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
-@WebServlet("/user-registration")
+@WebServlet("/guest/user-registration")
 public class UserRegistrationServlet extends HttpServlet {
 
     private UserService userService = new UserServiceImpl();
@@ -39,7 +39,7 @@ public class UserRegistrationServlet extends HttpServlet {
             returnToRegistration(req, resp, user, fieldsErrors);
         } else {
             userService.registrate(user);
-            resp.sendRedirect("/user-login");
+            resp.sendRedirect("/guest/user-login");
         }
     }
 

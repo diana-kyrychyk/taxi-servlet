@@ -26,7 +26,7 @@ public class UserOrderCancelServlet extends HttpServlet {
         orderService.cancel(Integer.valueOf(id));
 
         if (isAdmin(request)) {
-            response.sendRedirect("/order-list");
+            response.sendRedirect("/admin/order-list");
         } else {
             response.sendRedirect("/");
         }

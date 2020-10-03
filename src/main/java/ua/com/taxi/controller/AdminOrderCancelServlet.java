@@ -20,6 +20,6 @@ public class AdminOrderCancelServlet extends HttpServlet {
         String id = request.getParameter("id");
         orderService.cancel(Integer.valueOf(id));
 
-        response.sendRedirect("/order-list");
+        response.sendRedirect("/admin/order-list");
     }
 }

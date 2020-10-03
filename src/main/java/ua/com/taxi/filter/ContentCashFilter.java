@@ -11,8 +11,7 @@ public class ContentCashFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         chain.doFilter(req,res);
-        res.setHeader("Cache-Control", "no-cache, no-store, must-revailidate");
     }
 }

@@ -10,8 +10,6 @@ import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class AuthenticationFilter extends HttpFilter {
@@ -20,73 +18,63 @@ public class AuthenticationFilter extends HttpFilter {
     public static final String LOGGINED_USER_NAME = "logginedUserName";
     public static final String LOGGINED_USER_ID = "logginedUserId";
 
-    static final List<String> adminPages = Arrays.asList(
-            "/user-list",
-            "/user-edit",
-            "/car-list",
-            "/driver-list",
-            "/order-list",
-            "/admin/order-complete",
-            "/admin/order-cancel");
-
-    static final List<String> userPages = Arrays.asList("/order-create",
-            "/order-confirmation",
-            "/user/order-cancel");
-
-    static final List<String> guestPages = Arrays.asList(
-            "/index.jsp",
-            "/",
-            "/user-login",
-            "/user-registration",
-            "/user-logout"
-    );
-
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationFilter.class);
-
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-
         LOGGER.debug("Request to '{}' path", req.getServletPath());
 
-        if (!isExistingPath(req.getServletPath()) && !req.getServletPath().startsWith("/static")) {
-            LOGGER.warn("Request to unexisted path '{}'", req.getServletPath());
-            res.sendError(HttpServletResponse.SC_NOT_FOUND);
-        } else if (guestPages.contains(req.getServletPath()) || req.getServletPath().startsWith("/static")) {
-            chain.doFilter(req, res);
+        if (req.getServletPath().startsWith("/admin")) {
+            filterAdminRequests(req, res, chain);
+        } else if (req.getServletPath().startsWith("/user")) {
+            filterUserRequests(req, res, chain);
+        } else if (req.getServletPath().startsWith("/guest")) {
+            filterGuestRequests(req, res, chain);
         } else {
-            filterProtectedRequests(req, res, chain);
+            chain.doFilter(req, res);
         }
     }
 
-    private void filterProtectedRequests(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String user = extractUser(request);
-        List<String> roles = extractRoles(request);
-        if (user == null) {
-            LOGGER.warn("Not logginned request to '{}' path", request.getServletPath());
-            response.sendRedirect("/user-login");
-        } else if (userPages.contains(request.getServletPath()) && !roles.contains(Role.USER)) {
-            LOGGER.warn("Access denied for user '{}' to USER path '{}'", user, request.getServletPath());
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-        } else if (adminPages.contains(request.getServletPath()) && !roles.contains(Role.ADMIN)) {
-            LOGGER.warn("Access denied for user '{}' to ADMIN path '{}'", user, request.getServletPath());
+    private void filterUserRequests(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (!isAuthorised(request)) {
+            LOGGER.warn("Not logginned request to '{}' USER path", request.getServletPath());
+            response.sendRedirect("/guest/user-login");
+        } else if (!inRole(request, Role.USER)) {
+            LOGGER.warn("Access denied to USER path '{}'", request.getServletPath());
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
         } else {
             chain.doFilter(request, response);
         }
     }
 
-    private boolean isExistingPath(String path) {
-        return guestPages.contains(path) || userPages.contains(path) || adminPages.contains(path);
+    private void filterAdminRequests(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (!isAuthorised(request)) {
+            LOGGER.warn("Not logginned request to '{}' ADMIN path", request.getServletPath());
+            response.sendRedirect("/guest/user-login");
+        } else if (!inRole(request, Role.ADMIN)) {
+            LOGGER.warn("Access denied to ADMIN path '{}'", request.getServletPath());
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        } else {
+            chain.doFilter(request, response);
+        }
     }
 
-    private List<String> extractRoles(HttpServletRequest request) {
-        List<String> roles = (List<String>) request.getSession().getAttribute(LOGGINED_USER_ROLES);
-        return roles != null ? roles : new ArrayList<>();
+    private void filterGuestRequests(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (isAuthorised(request)) {
+            LOGGER.warn("Access denied for authorised user to 'guest' path '{}'", request.getServletPath());
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        } else {
+            chain.doFilter(request, response);
+        }
     }
 
-    private String extractUser(HttpServletRequest request) {
-        String user = (String) request.getSession().getAttribute(LOGGINED_USER_NAME);
-        return user;
+    private boolean isAuthorised(HttpServletRequest req) {
+        Object logginedAttribute = req.getSession().getAttribute(LOGGINED_USER_ID);
+        return logginedAttribute != null;
+    }
+
+    private boolean inRole(HttpServletRequest req, String role) {
+        List<String> roles = (List<String>) req.getSession().getAttribute(LOGGINED_USER_ROLES);
+        return roles != null && roles.contains(role);
     }
 }

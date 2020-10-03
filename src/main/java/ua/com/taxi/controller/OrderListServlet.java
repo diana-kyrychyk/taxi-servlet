@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/order-list")
+@WebServlet("/admin/order-list")
 public class OrderListServlet extends HttpServlet {
 
     private OrderService orderService = new OrderServiceImpl();
