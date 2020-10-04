@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ua.com.taxi.dao.CarDao;
 import ua.com.taxi.dao.ConnectionFactory;
-import ua.com.taxi.dao.impl.CarDaoImpl;
 import ua.com.taxi.exception.DaoException;
 import ua.com.taxi.model.Car;
 import ua.com.taxi.service.CarService;
@@ -16,8 +15,12 @@ import java.util.List;
 
 public class CarServiceImpl implements CarService {
 
-    private CarDao carDao = new CarDaoImpl();
     private static final Logger LOGGER = LoggerFactory.getLogger(CarServiceImpl.class);
+    private CarDao carDao;
+
+    public CarServiceImpl(CarDao carDao) {
+        this.carDao = carDao;
+    }
 
     @Override
     public List<Car> findAll() {

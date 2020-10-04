@@ -7,10 +7,6 @@ import ua.com.taxi.dao.CarDao;
 import ua.com.taxi.dao.ConnectionFactory;
 import ua.com.taxi.dao.OrderDao;
 import ua.com.taxi.dao.UserDao;
-import ua.com.taxi.dao.impl.AddressDaoImpl;
-import ua.com.taxi.dao.impl.CarDaoImpl;
-import ua.com.taxi.dao.impl.OrderDaoImpl;
-import ua.com.taxi.dao.impl.UserDaoImpl;
 import ua.com.taxi.exception.DaoException;
 import ua.com.taxi.exception.EntityNotFoundException;
 import ua.com.taxi.exception.RollbackException;
@@ -22,8 +18,8 @@ import ua.com.taxi.model.Order;
 import ua.com.taxi.model.OrderStatus;
 import ua.com.taxi.model.User;
 import ua.com.taxi.model.dto.OrderConfirmDto;
-import ua.com.taxi.model.dto.SearchParameters;
 import ua.com.taxi.model.dto.OrderListDto;
+import ua.com.taxi.model.dto.SearchParameters;
 import ua.com.taxi.service.OrderService;
 import ua.com.taxi.util.FareCalculator;
 import ua.com.taxi.util.MapService;
@@ -37,13 +33,20 @@ import java.util.Optional;
 
 public class OrderServiceImpl implements OrderService {
 
-    private static final String FAILED_OPEN_CONNECTION_MESSAGE = "Database connection opening failed";
-    private OrderDao orderDao = new OrderDaoImpl();
-    private UserDao userDao = new UserDaoImpl();
-    private AddressDao addressDao = new AddressDaoImpl();
-    private CarDao carDao = new CarDaoImpl();
-
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
+
+    private static final String FAILED_OPEN_CONNECTION_MESSAGE = "Database connection opening failed";
+    private OrderDao orderDao;
+    private UserDao userDao;
+    private AddressDao addressDao;
+    private CarDao carDao;
+
+    public OrderServiceImpl(OrderDao orderDao, UserDao userDao, AddressDao addressDao, CarDao carDao) {
+        this.orderDao = orderDao;
+        this.userDao = userDao;
+        this.addressDao = addressDao;
+        this.carDao = carDao;
+    }
 
     @Override
     public int create(int userId, Category category, int passengerCount, int departureId, int arrivalId) {

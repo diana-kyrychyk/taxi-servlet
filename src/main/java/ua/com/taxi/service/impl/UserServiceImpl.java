@@ -1,10 +1,12 @@
 package ua.com.taxi.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ua.com.taxi.dao.ConnectionFactory;
 import ua.com.taxi.dao.RoleDao;
 import ua.com.taxi.dao.UserDao;
-import ua.com.taxi.dao.impl.RoleDaoImpl;
-import ua.com.taxi.dao.impl.UserDaoImpl;
+import ua.com.taxi.exception.DaoException;
+import ua.com.taxi.exception.RollbackException;
 import ua.com.taxi.model.Role;
 import ua.com.taxi.model.User;
 import ua.com.taxi.model.dto.UserRegistrationDto;
@@ -20,8 +22,16 @@ import java.util.Optional;
 
 public class UserServiceImpl implements UserService {
 
-    private UserDao userDao = new UserDaoImpl();
-    private RoleDao roleDao = new RoleDaoImpl();
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final String FAILED_OPEN_CONNECTION_MESSAGE = "Database connection opening failed";
+
+    private UserDao userDao;
+    private RoleDao roleDao;
+
+    public UserServiceImpl(UserDao userDao, RoleDao roleDao) {
+        this.userDao = userDao;
+        this.roleDao = roleDao;
+    }
 
     @Override
     public Optional<User> findById(Integer id) {
@@ -34,7 +44,8 @@ public class UserServiceImpl implements UserService {
                 user.setRoles(roles);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error("Finding user by ID failed");
+            throw new DaoException("Finding user by ID failed", e);
         }
         return Optional.ofNullable(user);
     }
@@ -50,7 +61,8 @@ public class UserServiceImpl implements UserService {
                 user.setRoles(roles);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error("Finding user by phone failed");
+            throw new DaoException("Finding user by phone failed", e);
         }
         return Optional.ofNullable(user);
     }
@@ -66,7 +78,8 @@ public class UserServiceImpl implements UserService {
                 user.setRoles(roles);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error("Finding all users failed");
+            throw new DaoException("Finding all users failed", e);
         }
         return users;
     }
@@ -87,12 +100,16 @@ public class UserServiceImpl implements UserService {
                 userDao.updateRolesForUser(user.getId(), Collections.singletonList(1), connection);
                 connection.commit();
             } catch (Exception e) {
+                String message = String.format("Registration user failed '%s'", userDto);
+                LOGGER.error(message);
                 connection.rollback();
+                throw new RollbackException(message, e);
             } finally {
                 connection.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error(FAILED_OPEN_CONNECTION_MESSAGE);
+            throw new DaoException(FAILED_OPEN_CONNECTION_MESSAGE, e);
         }
     }
 
@@ -111,12 +128,16 @@ public class UserServiceImpl implements UserService {
                 }
                 connection.commit();
             } catch (Exception e) {
+                String message = String.format("Updating user '%s' failed", id);
+                LOGGER.error(message);
                 connection.rollback();
+                throw new RollbackException(message, e);
             } finally {
                 connection.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error(FAILED_OPEN_CONNECTION_MESSAGE);
+            throw new DaoException(FAILED_OPEN_CONNECTION_MESSAGE, e);
         }
     }
 }

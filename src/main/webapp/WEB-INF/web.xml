@@ -5,6 +5,24 @@
          version="3.1">
 
 
+  <servlet>
+    <servlet-name>MainServlet</servlet-name>
+    <servlet-class>ua.com.taxi.controller.MainServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>MainServlet</servlet-name>
+    <url-pattern>/</url-pattern>
+    <url-pattern>/guest/*</url-pattern>
+    <url-pattern>/user/*</url-pattern>
+    <url-pattern>/admin/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>/static/*</url-pattern>
+  </servlet-mapping>
+
   <filter>
     <filter-name>EncodingFilter</filter-name>
     <filter-class>ua.com.taxi.filter.EncodingFilter</filter-class>
