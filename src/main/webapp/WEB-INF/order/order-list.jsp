@@ -1,11 +1,9 @@
-<%@ page import="java.time.LocalDate" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
+<%@taglib uri="http://taxi.com.ua/tags" prefix="tt" %>
 
 <html>
 <head>
@@ -82,13 +80,18 @@
                 </tr>
                 <c:forEach var="order" items="${orders}">
                     <tr>
-                        <td>${order.creationDate}</td>
+                        <td>
+                            <tt:DateTime date="${order.creationDate}" pattern="dd.MM.yyyy HH:mm"/>
+                        </td>
                         <td>${order.userPhone}</td>
                         <td>${order.departureAddress}</td>
                         <td>${order.arrivalAddress}</td>
                         <td>${order.category}</td>
                         <td>${order.licensePlate}</td>
-                        <td>${order.fare}</td>
+                        <td>
+                            <fmt:formatNumber type="number"
+                                              maxFractionDigits="2" value="${order.fare / 100}"/> UAH
+                        </td>
                         <td>
 						<span class="badge
                                     ${'NEW'.equals(order.status.toString()) ? 'badge-primary'
