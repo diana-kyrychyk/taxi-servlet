@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.nonNull;
 
-@WebServlet("/user-edit")
+@WebServlet("/admin/user-edit")
 public class UserEditServlet extends HttpServlet {
 
     private UserService userService = new UserServiceImpl();
@@ -60,6 +60,6 @@ public class UserEditServlet extends HttpServlet {
         //TODO show at page
         req.setAttribute("message", "Role was added succesfully");
 
-        resp.sendRedirect("/user-list");
+        resp.sendRedirect("/admin/user-list");
     }
 }

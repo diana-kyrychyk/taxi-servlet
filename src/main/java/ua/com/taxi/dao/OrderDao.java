@@ -3,6 +3,7 @@ package ua.com.taxi.dao;
 import ua.com.taxi.model.Order;
 import ua.com.taxi.model.OrderStatus;
 import ua.com.taxi.model.dto.OrderConfirmDto;
+import ua.com.taxi.model.dto.SearchParameters;
 import ua.com.taxi.model.dto.OrderListDto;
 
 import java.sql.Connection;
@@ -15,6 +16,10 @@ public interface OrderDao {
     void create(Order order, Connection connection) throws SQLException;
 
     List<OrderListDto> findAllListDto(Connection connection) throws SQLException;
+
+    int findCount(SearchParameters searchParameters, Connection connection) throws SQLException;
+
+    List<OrderListDto> findAllListDto(SearchParameters searchParameters, Connection connection) throws SQLException;
 
     Optional<OrderConfirmDto> findOrderConfirmDto(Connection connection, Integer id) throws SQLException;
 

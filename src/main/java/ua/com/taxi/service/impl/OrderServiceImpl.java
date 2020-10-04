@@ -22,6 +22,7 @@ import ua.com.taxi.model.Order;
 import ua.com.taxi.model.OrderStatus;
 import ua.com.taxi.model.User;
 import ua.com.taxi.model.dto.OrderConfirmDto;
+import ua.com.taxi.model.dto.SearchParameters;
 import ua.com.taxi.model.dto.OrderListDto;
 import ua.com.taxi.service.OrderService;
 import ua.com.taxi.util.FareCalculator;
@@ -100,11 +101,34 @@ public class OrderServiceImpl implements OrderService {
         try (Connection connection = ConnectionFactory.getConnection()) {
             orders = orderDao.findAllListDto(connection);
         } catch (SQLException e) {
-            LOGGER.error(FAILED_OPEN_CONNECTION_MESSAGE);
-            throw new DaoException(FAILED_OPEN_CONNECTION_MESSAGE, e);
+            LOGGER.error("Finding orders failed");
+            throw new DaoException("Finding orders failed", e);
         }
         return orders;
+    }
 
+    @Override
+    public int findCount(SearchParameters searchParameters) {
+        LOGGER.debug("findCount() [{}] ", searchParameters);
+        try (Connection connection = ConnectionFactory.getConnection()) {
+            return orderDao.findCount(searchParameters, connection);
+        } catch (SQLException e) {
+            LOGGER.error("Finding filtered orders count failed");
+            throw new DaoException("Finding filtered orders count failed", e);
+        }
+    }
+
+    @Override
+    public List<OrderListDto> findAllListDto(SearchParameters searchParameters) {
+        LOGGER.debug("findAllListDto() [{}] ", searchParameters);
+        List<OrderListDto> orders = new ArrayList<>();
+        try (Connection connection = ConnectionFactory.getConnection()) {
+            orders = orderDao.findAllListDto(searchParameters, connection);
+        } catch (SQLException e) {
+            LOGGER.error("Finding filtered orders failed");
+            throw new DaoException("Finding filtered orders failed", e);
+        }
+        return orders;
     }
 
     @Override

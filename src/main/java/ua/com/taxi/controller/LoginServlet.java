@@ -20,7 +20,7 @@ import static ua.com.taxi.filter.AuthenticationFilter.LOGGINED_USER_ID;
 import static ua.com.taxi.filter.AuthenticationFilter.LOGGINED_USER_NAME;
 import static ua.com.taxi.filter.AuthenticationFilter.LOGGINED_USER_ROLES;
 
-@WebServlet("/user-login")
+@WebServlet("/guest/user-login")
 public class LoginServlet extends HttpServlet {
 
     private UserService userService = new UserServiceImpl();
@@ -49,7 +49,7 @@ public class LoginServlet extends HttpServlet {
             req.getSession().setAttribute(LOGGINED_USER_ID, userOptional.get().getId());
             resp.sendRedirect("/");
         } else {
-            resp.sendRedirect("/user-login");
+            resp.sendRedirect("/guest/user-login");
         }
     }
 

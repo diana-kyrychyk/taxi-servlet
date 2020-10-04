@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/car-list")
+@WebServlet("/admin/car-list")
 public class CarListServlet extends HttpServlet {
 
     private CarService carService = new CarServiceImpl();
