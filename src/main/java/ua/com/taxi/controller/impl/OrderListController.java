@@ -1,20 +1,15 @@
-package ua.com.taxi.controller;
+package ua.com.taxi.controller.impl;
 
+import ua.com.taxi.controller.Controller;
 import ua.com.taxi.filter.LocaleFilter;
 import ua.com.taxi.model.User;
-import ua.com.taxi.model.dto.SearchParameters;
 import ua.com.taxi.model.dto.OrderListDto;
+import ua.com.taxi.model.dto.SearchParameters;
 import ua.com.taxi.service.OrderService;
 import ua.com.taxi.service.UserService;
-import ua.com.taxi.service.impl.OrderServiceImpl;
-import ua.com.taxi.service.impl.UserServiceImpl;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -22,24 +17,27 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-@WebServlet("/admin/order-list")
-public class OrderListServlet extends HttpServlet {
+public class OrderListController implements Controller {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private OrderService orderService = new OrderServiceImpl();
-    private UserService userService = new UserServiceImpl();
+    private OrderService orderService;
+    private UserService userService;
+
+    public OrderListController(OrderService orderService, UserService userService) {
+        this.orderService = orderService;
+        this.userService = userService;
+    }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public String processRequest(HttpServletRequest request, HttpServletResponse response) {
         SearchParameters searchParameters = extractSearchParameters(request);
         validatesDates(searchParameters, request);
         fillSearchParameters(request, searchParameters);
         List<OrderListDto> orderList = orderService.findAllListDto(searchParameters);
 
         request.setAttribute("orders", orderList);
-        request.getRequestDispatcher("/WEB-INF/order/order-list.jsp").forward(request, response);
+        return "/WEB-INF/order/order-list.jsp";
     }
-
 
     private SearchParameters extractSearchParameters(HttpServletRequest request) {
         SearchParameters searchParameters = new SearchParameters();

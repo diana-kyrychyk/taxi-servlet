@@ -1,9 +1,13 @@
 package ua.com.taxi.dao;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ua.com.taxi.exception.DaoException;
 import ua.com.taxi.util.FileIO;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -11,41 +15,28 @@ import java.util.Properties;
 public class ConnectionFactory {
 
     private static final String PROPERTIES_FILE_NAME = "application.properties";
-    private static final String KEY_DRIVER = "db.driver";
-    private static final String KEY_URL = "db.url";
-    private static final String KEY_USER = "db.user";
-    private static final String KEY_PASSWORD = "db.password";
-
-    private static HikariConfig config = new HikariConfig();
-    private static HikariDataSource ds;
+    private static final String KEY_DS_JNDI_NAME = "ds.jndi.name";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionFactory.class);
 
     private static FileIO fileIO = new FileIO();
+    private static DataSource ds;
 
     static {
         Properties properties = fileIO.readProperties(PROPERTIES_FILE_NAME);
-        String driver = properties.getProperty(KEY_DRIVER);
-        String url = properties.getProperty(KEY_URL);
-        String user = properties.getProperty(KEY_USER);
-        String password = properties.getProperty(KEY_PASSWORD);
-
-        config.setDriverClassName(driver);
-        config.setJdbcUrl(url);
-        config.setUsername(user);
-        config.setPassword(password);
-        config.addDataSourceProperty("cachePrepStmts", "true");
-        config.addDataSourceProperty("prepStmtCacheSize", "250");
-        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        ds = new HikariDataSource(config);
-    }
-
-    private ConnectionFactory() {
+        String dsName = properties.getProperty(KEY_DS_JNDI_NAME);
+        try {
+            InitialContext cxt = new InitialContext();
+            ds = (DataSource) cxt.lookup(dsName);
+        } catch (NamingException e) {
+            LOGGER.error("Lookup DataSource failed");
+            throw new DaoException("Lookup DataSource failed", e);
+        }
     }
 
     public static Connection getConnection() throws SQLException {
         return ds.getConnection();
     }
 
-
+    private ConnectionFactory() {
+    }
 }
-
-

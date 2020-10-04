@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ua.com.taxi.dao.ConnectionFactory;
 import ua.com.taxi.dao.DriverDao;
-import ua.com.taxi.dao.impl.DriverDaoImpl;
 import ua.com.taxi.exception.DaoException;
 import ua.com.taxi.model.Driver;
 import ua.com.taxi.service.DriverService;
@@ -16,8 +15,12 @@ import java.util.List;
 
 public class DriverServiceImpl implements DriverService {
 
-    private DriverDao driverDao = new DriverDaoImpl();
     private static final Logger LOGGER = LoggerFactory.getLogger(DriverServiceImpl.class);
+    private DriverDao driverDao;
+
+    public DriverServiceImpl(DriverDao driverDao) {
+        this.driverDao = driverDao;
+    }
 
     @Override
     public List<Driver> findAll() {
