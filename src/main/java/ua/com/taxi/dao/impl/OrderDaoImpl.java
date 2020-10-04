@@ -5,6 +5,7 @@ import ua.com.taxi.model.Category;
 import ua.com.taxi.model.Order;
 import ua.com.taxi.model.OrderStatus;
 import ua.com.taxi.model.dto.OrderConfirmDto;
+import ua.com.taxi.model.dto.SearchParameters;
 import ua.com.taxi.model.dto.OrderListDto;
 
 import java.sql.Connection;
@@ -14,12 +15,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
 
 public class OrderDaoImpl implements OrderDao {
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
     @Override
     public void create(Order order, Connection connection) throws SQLException {
         String insertUser =
@@ -77,6 +82,110 @@ public class OrderDaoImpl implements OrderDao {
             }
         }
         return orders;
+    }
+
+    @Override
+    public int findCount(SearchParameters searchParameters, Connection connection) throws SQLException {
+
+        String query = "SELECT " +
+                "COUNT(*) as orders_number " +
+                "FROM orders as o " +
+                "WHERE 1 = 1 " +
+                "{FilterByQuery} ; ";
+
+        query = query.replace("{FilterByQuery}", specifyFilterQuery(searchParameters));
+        int orderCount = 0;
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+            if (resultSet.next()) {
+                orderCount = resultSet.getInt("orders_number");
+            }
+        }
+        return orderCount;
+    }
+
+    @Override
+    public List<OrderListDto> findAllListDto(SearchParameters searchParameters, Connection connection) throws SQLException {
+
+        String query = "select " +
+                "o.id, " +
+                "u.phone, " +
+                "o.category, " +
+                "o.fare, " +
+                "o.status, " +
+                "o.creation_date, " +
+                "ad.street  as departure_street,  " +
+                "ad.building as departure_building, " +
+                "aa.street as arrival_street, " +
+                "aa.building as arrival_building, " +
+                "c.license_plate " +
+                "FROM orders as o " +
+                "LEFT JOIN cars c on o.car_id = c.id " +
+                "LEFT JOIN users u on o.user_id = u.id " +
+                "LEFT JOIN addresses ad on o.departure_address_id = ad.id " +
+                "LEFT JOIN addresses aa on o.arrival_address_id = aa.id " +
+                "WHERE 1 = 1 " +
+                "{FilterByQuery}" +
+                "{OrderByQuery} " +
+                "{OffsetQuery} " +
+                "{LimitQuery} ; ";
+
+        query = query.replace("{FilterByQuery}", specifyFilterQuery(searchParameters));
+        query = query.replace("{OrderByQuery}", specifyOrderByQuery(searchParameters.getSortType()));
+        query = query.replace("{OffsetQuery}", specifyOffsetQuery(searchParameters));
+        query = query.replace("{LimitQuery}", specifyLimitQuery(searchParameters));
+
+        List<OrderListDto> orders = new ArrayList<>();
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
+            while (resultSet.next()) {
+                OrderListDto order = extractOrder(resultSet);
+                orders.add(order);
+            }
+        }
+        return orders;
+    }
+
+    private String specifyOrderByQuery(String sortType) {
+        return
+                SearchParameters.SORT_BY_DATE.equals(sortType) ? " ORDER BY o.creation_date DESC "
+                        : SearchParameters.SORT_BY_FARE.equals(sortType) ? " ORDER BY o.fare DESC "
+                        : "";
+    }
+
+    private String specifyFilterQuery(SearchParameters searchParameters) {
+        String filterQuery = "";
+        if (searchParameters.getSelectedPassenger() != null) {
+            filterQuery = filterQuery
+                    .concat(" AND o.user_id = {user_id} ")
+                    .replace("{user_id}", String.valueOf(searchParameters.getSelectedPassenger()));
+        }
+
+        if (searchParameters.getStartDate() != null ) {
+            filterQuery = filterQuery
+                    .concat(" AND o.creation_date > '{date}' ")
+                    .replace("{date}", DATE_TIME_FORMATTER.format(searchParameters.getStartDate()));
+        }
+
+        if (searchParameters.getEndDate() != null ) {
+            filterQuery = filterQuery
+                    .concat(" AND o.creation_date < '{date}' ")
+                    .replace("{date}", DATE_TIME_FORMATTER.format(searchParameters.getEndDate()));
+        }
+
+        return filterQuery;
+    }
+
+    private String specifyOffsetQuery(SearchParameters searchParameters) {
+        int offset = searchParameters.getPageSize() * (searchParameters.getPageNumber() - 1);
+        return " OFFSET {count} "
+                .replace("{count}", String.valueOf(offset));
+    }
+
+    private String specifyLimitQuery(SearchParameters searchParameters) {
+        return " LIMIT {count} "
+                .replace("{count}", String.valueOf(searchParameters.getPageSize()));
     }
 
     private OrderListDto extractOrder(ResultSet resultSet) throws SQLException {
