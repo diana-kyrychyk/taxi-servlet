@@ -14,14 +14,21 @@ import java.util.Properties;
 
 public class ConnectionFactory {
 
+    private static ConnectionFactory instance;
+
     private static final String PROPERTIES_FILE_NAME = "application.properties";
     private static final String KEY_DS_JNDI_NAME = "ds.jndi.name";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionFactory.class);
 
     private static FileIO fileIO = new FileIO();
-    private static DataSource ds;
+    private DataSource ds;
 
-    static {
+    public static Connection getConnection() throws SQLException {
+        ConnectionFactory instance = getInstance();
+        return instance.ds.getConnection();
+    }
+
+    private ConnectionFactory() {
         Properties properties = fileIO.readProperties(PROPERTIES_FILE_NAME);
         String dsName = properties.getProperty(KEY_DS_JNDI_NAME);
         try {
@@ -33,10 +40,14 @@ public class ConnectionFactory {
         }
     }
 
-    public static Connection getConnection() throws SQLException {
-        return ds.getConnection();
-    }
-
-    private ConnectionFactory() {
+    private static ConnectionFactory getInstance() {
+        if (instance == null) {
+            synchronized (ConnectionFactory.class) {
+                if (instance == null) {
+                    instance = new ConnectionFactory();
+                }
+            }
+        }
+        return instance;
     }
 }
