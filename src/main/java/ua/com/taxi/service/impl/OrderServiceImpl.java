@@ -13,11 +13,11 @@ import ua.com.taxi.exception.RollbackException;
 import ua.com.taxi.model.Address;
 import ua.com.taxi.model.Car;
 import ua.com.taxi.model.CarStatus;
-import ua.com.taxi.model.Category;
 import ua.com.taxi.model.Order;
 import ua.com.taxi.model.OrderStatus;
 import ua.com.taxi.model.User;
 import ua.com.taxi.model.dto.OrderConfirmDto;
+import ua.com.taxi.model.dto.OrderCreateDto;
 import ua.com.taxi.model.dto.OrderListDto;
 import ua.com.taxi.model.dto.SearchParameters;
 import ua.com.taxi.service.OrderService;
@@ -49,39 +49,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public int create(int userId, Category category, int passengerCount, int departureId, int arrivalId) {
+    public int create(OrderCreateDto orderCreateDto) {
         Order order = null;
         try (Connection connection = ConnectionFactory.getConnection()) {
             try {
                 connection.setAutoCommit(false);
-                Optional<User> userOptional = userDao.findById(userId, connection);
-                Optional<Address> departureAddressOpt = addressDao.findById(departureId, connection);
-                Optional<Address> arrivalAddressOpt = addressDao.findById(arrivalId, connection);
-
-                User user = userOptional.orElseThrow(EntityNotFoundException::new);
-                Address addressDeparture = departureAddressOpt.orElseThrow(EntityNotFoundException::new);
-                Address addressArrival = arrivalAddressOpt.orElseThrow(EntityNotFoundException::new);
-
-                order = new Order();
-                order.setDepartureAddress(addressDeparture);
-                order.setArrivalAddress(addressArrival);
-                order.setPassengersCount(passengerCount);
-                order.setCategory(category);
-
-
-                long distance = MapService.calculateDistance(addressDeparture.getPoint(), addressArrival.getPoint());
-                long fare = FareCalculator.calculate(category, distance);
-
-                order.setFare(fare);
-
-                long discountCoins = fare * user.getDiscount() / 100;
-                long finalFare = fare - discountCoins;
-                order.setDiscount(user.getDiscount());
-                order.setFinalFare(finalFare);
-                order.setCreationDate(LocalDateTime.now());
-                order.setUser(user);
-                order.setStatus(OrderStatus.NEW);
-
+                order = buildOrder(orderCreateDto, connection);
                 orderDao.create(order, connection);
                 connection.commit();
             } catch (Exception e) {
@@ -96,6 +69,42 @@ public class OrderServiceImpl implements OrderService {
             throw new DaoException(FAILED_OPEN_CONNECTION_MESSAGE, e);
         }
         return order.getId();
+    }
+
+    private Order buildOrder(OrderCreateDto orderCreateDto, Connection connection) throws SQLException {
+        Optional<User> userOptional = userDao.findById(orderCreateDto.getUserId(), connection);
+        Optional<Address> departureAddressOpt = addressDao.findById(orderCreateDto.getDepartureId(), connection);
+        Optional<Address> arrivalAddressOpt = addressDao.findById(orderCreateDto.getArrivalId(), connection);
+
+        User user = userOptional.orElseThrow(EntityNotFoundException::new);
+        Address addressDeparture = departureAddressOpt.orElseThrow(EntityNotFoundException::new);
+        Address addressArrival = arrivalAddressOpt.orElseThrow(EntityNotFoundException::new);
+
+        Order order = new Order();
+        order.setUser(user);
+        order.setDiscount(user.getDiscount());
+        order.setDepartureAddress(addressDeparture);
+        order.setArrivalAddress(addressArrival);
+        order.setPassengersCount(orderCreateDto.getPassengerCount());
+        order.setCategory(orderCreateDto.getCategory());
+
+        order.setFare(calculateFare(order));
+
+        order.setFinalFare(calculateFinalFare(order));
+        order.setCreationDate(LocalDateTime.now());
+        order.setStatus(OrderStatus.NEW);
+
+        return order;
+    }
+
+    private long calculateFare(Order order) {
+        long distance = MapService.calculateDistance(order.getDepartureAddress().getPoint(), order.getArrivalAddress().getPoint());
+        return FareCalculator.calculate(order.getCategory(), distance);
+    }
+
+    private long calculateFinalFare(Order order) {
+        long discountCoins = order.getFare() * order.getDiscount() / 100;
+        return order.getFare() - discountCoins;
     }
 
     @Override
@@ -142,12 +151,7 @@ public class OrderServiceImpl implements OrderService {
                 connection.setAutoCommit(false);
 
                 Optional<OrderConfirmDto> orderOptional = orderDao.findOrderConfirmDto(connection, id);
-                if (!orderOptional.isPresent()) {
-                    String message = String.format("New order '%s' was not found", id);
-                    LOGGER.error(message);
-                    throw new EntityNotFoundException(message);
-                }
-                order = orderOptional.get();
+                order = orderOptional.orElseThrow(EntityNotFoundException::new);
 
                 Optional<Car> foundCar = carDao.find(order.getCategory(), order.getPassengersCount(), CarStatus.FREE, connection);
                 order.setSuggestedCar(foundCar.orElse(null));
@@ -174,14 +178,14 @@ public class OrderServiceImpl implements OrderService {
             try {
                 connection.setAutoCommit(false);
                 boolean carIsFree = carDao.isCarInStatus(carId, CarStatus.FREE, connection);
-                if (carIsFree) {
-                    int driverId = carDao.findDriverIdByCar(carId, connection);
-                    orderDao.startOrder(orderId, carId, driverId, OrderStatus.ON_ROAD, connection);
-                    carDao.changeCarStatus(carId, CarStatus.ON_ORDER, connection);
-                } else {
+                if (!carIsFree) {
                     LOGGER.error("The car was not found");
                     throw new EntityNotFoundException();
                 }
+                int driverId = carDao.findDriverIdByCar(carId, connection);
+                orderDao.startOrder(orderId, carId, driverId, OrderStatus.ON_ROAD, connection);
+                carDao.changeCarStatus(carId, CarStatus.ON_ORDER, connection);
+
                 connection.commit();
             } catch (Exception e) {
                 String message = String.format("Order confirmation '%s' failed", orderId);

@@ -1,17 +1,17 @@
 package ua.com.taxi.service;
 
-import ua.com.taxi.model.Category;
 import ua.com.taxi.model.OrderStatus;
 import ua.com.taxi.model.dto.OrderConfirmDto;
-import ua.com.taxi.model.dto.SearchParameters;
+import ua.com.taxi.model.dto.OrderCreateDto;
 import ua.com.taxi.model.dto.OrderListDto;
+import ua.com.taxi.model.dto.SearchParameters;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface OrderService {
 
-    int create(int userId, Category category, int passengerCount, int departureId, int arrivalId);
+    int create(OrderCreateDto orderCreateDto);
 
     List<OrderListDto> findAllListDto();
 

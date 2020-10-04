@@ -86,11 +86,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void registrate(UserRegistrationDto userDto) {
-        User user = new User();
-        user.setName(userDto.getName());
-        String hashPassword = Hasher.hash(userDto.getPassword());
-        user.setPassword(hashPassword);
-        user.setPhone(userDto.getPhone());
+        User user = buildUser(userDto);
 
         try (Connection connection = ConnectionFactory.getConnection()) {
             try {
@@ -111,6 +107,15 @@ public class UserServiceImpl implements UserService {
             LOGGER.error(FAILED_OPEN_CONNECTION_MESSAGE);
             throw new DaoException(FAILED_OPEN_CONNECTION_MESSAGE, e);
         }
+    }
+
+    private User buildUser(UserRegistrationDto userDto) {
+        User user = new User();
+        user.setName(userDto.getName());
+        String hashPassword = Hasher.hash(userDto.getPassword());
+        user.setPassword(hashPassword);
+        user.setPhone(userDto.getPhone());
+        return user;
     }
 
     @Override
