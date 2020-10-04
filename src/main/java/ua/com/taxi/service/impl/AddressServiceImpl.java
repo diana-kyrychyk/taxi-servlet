@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ua.com.taxi.dao.AddressDao;
 import ua.com.taxi.dao.ConnectionFactory;
-import ua.com.taxi.dao.impl.AddressDaoImpl;
 import ua.com.taxi.exception.DaoException;
 import ua.com.taxi.model.Address;
 import ua.com.taxi.service.AddressService;
@@ -16,8 +15,12 @@ import java.util.List;
 
 public class AddressServiceImpl implements AddressService {
 
-    private AddressDao addressDao = new AddressDaoImpl();
     private static final Logger LOGGER = LoggerFactory.getLogger(AddressServiceImpl.class);
+    private AddressDao addressDao;
+
+    public AddressServiceImpl(AddressDao addressDao) {
+        this.addressDao = addressDao;
+    }
 
     @Override
     public List<Address> findAll() {

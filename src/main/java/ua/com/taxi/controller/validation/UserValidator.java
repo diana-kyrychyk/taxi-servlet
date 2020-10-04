@@ -2,7 +2,6 @@ package ua.com.taxi.controller.validation;
 
 import ua.com.taxi.model.dto.UserRegistrationDto;
 import ua.com.taxi.service.UserService;
-import ua.com.taxi.service.impl.UserServiceImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,9 +10,13 @@ import java.util.regex.Pattern;
 
 public class UserValidator {
 
-    private UserService userService = new UserServiceImpl();
     private static final String PASSWORD_PATTERN = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$";
     private static final String PHONE_PATTERN = "^[+][0-9]{12}";
+    private UserService userService;
+
+    public UserValidator(UserService userService) {
+        this.userService = userService;
+    }
 
     public Map<String, String> validate(UserRegistrationDto user) {
         Map<String, String> fieldsErrors = new HashMap<>();

@@ -22,13 +22,13 @@ public class AuthenticationFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-        LOGGER.debug("Request to '{}' path", req.getServletPath());
+        LOGGER.debug("Request to '{}' path", req.getRequestURI());
 
-        if (req.getServletPath().startsWith("/admin")) {
+        if (req.getRequestURI().startsWith("/admin")) {
             filterAdminRequests(req, res, chain);
-        } else if (req.getServletPath().startsWith("/user")) {
+        } else if (req.getRequestURI().startsWith("/user")) {
             filterUserRequests(req, res, chain);
-        } else if (req.getServletPath().startsWith("/guest")) {
+        } else if (req.getRequestURI().startsWith("/guest")) {
             filterGuestRequests(req, res, chain);
         } else {
             chain.doFilter(req, res);
@@ -37,10 +37,10 @@ public class AuthenticationFilter extends HttpFilter {
 
     private void filterUserRequests(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (!isAuthorised(request)) {
-            LOGGER.warn("Not logginned request to '{}' USER path", request.getServletPath());
+            LOGGER.warn("Not logginned request to '{}' USER path", request.getRequestURI());
             response.sendRedirect("/guest/user-login");
         } else if (!inRole(request, Role.USER)) {
-            LOGGER.warn("Access denied to USER path '{}'", request.getServletPath());
+            LOGGER.warn("Access denied to USER path '{}'", request.getRequestURI());
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
         } else {
             chain.doFilter(request, response);
@@ -49,10 +49,10 @@ public class AuthenticationFilter extends HttpFilter {
 
     private void filterAdminRequests(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (!isAuthorised(request)) {
-            LOGGER.warn("Not logginned request to '{}' ADMIN path", request.getServletPath());
+            LOGGER.warn("Not logginned request to '{}' ADMIN path", request.getRequestURI());
             response.sendRedirect("/guest/user-login");
         } else if (!inRole(request, Role.ADMIN)) {
-            LOGGER.warn("Access denied to ADMIN path '{}'", request.getServletPath());
+            LOGGER.warn("Access denied to ADMIN path '{}'", request.getRequestURI());
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
         } else {
             chain.doFilter(request, response);
@@ -61,7 +61,7 @@ public class AuthenticationFilter extends HttpFilter {
 
     private void filterGuestRequests(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (isAuthorised(request)) {
-            LOGGER.warn("Access denied for authorised user to 'guest' path '{}'", request.getServletPath());
+            LOGGER.warn("Access denied for authorised user to 'guest' path '{}'", request.getRequestURI());
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
         } else {
             chain.doFilter(request, response);

@@ -1,35 +1,37 @@
-package ua.com.taxi.controller;
+package ua.com.taxi.controller.impl;
 
+import ua.com.taxi.controller.Controller;
+import ua.com.taxi.controller.MainServlet;
 import ua.com.taxi.model.Role;
 import ua.com.taxi.service.OrderService;
-import ua.com.taxi.service.impl.OrderServiceImpl;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static ua.com.taxi.filter.AuthenticationFilter.LOGGINED_USER_ROLES;
 
-@WebServlet("/user/order-cancel")
-public class UserOrderCancelServlet extends HttpServlet {
+public class UserOrderCancelController implements Controller {
 
-    private OrderService orderService = new OrderServiceImpl();
+    private OrderService orderService;
+
+    public UserOrderCancelController(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public String processRequest(HttpServletRequest request, HttpServletResponse response) {
         String id = request.getParameter("id");
         orderService.cancel(Integer.valueOf(id));
+        String redirectPath = "";
 
         if (isAdmin(request)) {
-            response.sendRedirect("/admin/order-list");
+            redirectPath = "/admin/order-list";
         } else {
-            response.sendRedirect("/");
+            redirectPath = "/";
         }
+        return MainServlet.REDIRECT_PREFIX.concat(redirectPath);
     }
 
     private boolean isAdmin(HttpServletRequest request) {
