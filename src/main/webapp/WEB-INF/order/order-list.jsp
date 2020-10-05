@@ -29,7 +29,7 @@
 <div class="container-fluid">
 
 
-    <form action="/admin/order-list" method="get">
+    <form action="${pageContext.request.contextPath}/admin/order-list" method="get">
         <div style="display: flex; justify-content: space-between;">
             <div>
                 <label><fmt:message key="orderlist.form.label.passenger"/></label>
@@ -104,12 +104,12 @@
 
                         <td>
                             <c:if test="${'NEW'.equals(order.status.toString()) || 'ON_ROAD'.equals(order.status.toString())}">
-                                <a href="/admin/order-cancel?id=${order.orderId}" class="btn btn-danger"
+                                <a href="${pageContext.request.contextPath}/admin/order-cancel?id=${order.orderId}" class="btn btn-danger"
                                    role="button"><fmt:message key="orderlist.button.cancel"/></a>
                             </c:if>
 
                             <c:if test="${'ON_ROAD'.equals(order.status.toString())}">
-                                <a href="/admin/order-complete?id=${order.orderId}" class="btn btn-success"
+                                <a href="${pageContext.request.contextPath}/admin/order-complete?id=${order.orderId}" class="btn btn-success"
                                    role="button"><fmt:message key="orderlist.button.complete"/></a>
                             </c:if>
                         </td>

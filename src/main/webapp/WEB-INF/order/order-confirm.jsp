@@ -97,11 +97,11 @@
 
             <div class="form-group" style="display: flex; justify-content: space-evenly;">
 
-                <a href="/user/order-cancel?id=${order.orderId}" class="btn btn-danger" role="button">
+                <a href="${pageContext.request.contextPath}/user/order-cancel?id=${order.orderId}" class="btn btn-danger" role="button">
                     <fmt:message key="order-confirm.button.cancel"/>
                 </a>
 
-                <form action="/user/order-confirmation" method="post">
+                <form action="${pageContext.request.contextPath}/user/order-confirmation" method="post">
                     <input name="orderId" type="hidden" value="${order.orderId}">
                     <input name="carId" type="hidden" value="${order.suggestedCar.id}">
                     <button type="submit" ${order.suggestedCar == null ? 'disabled' : '' } class="btn btn-success">
