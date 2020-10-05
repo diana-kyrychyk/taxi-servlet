@@ -24,7 +24,7 @@
         <div class="col-sm-3"></div>
         <div class="col-sm-6">
             <h2 align="center"><fmt:message key="userlogin.form.title"/></h2>
-            <form action="/guest/user-login" method="post">
+            <form action="${pageContext.request.contextPath}/guest/user-login" method="post">
 
                 <div class="form-group">
                     <label for="phone"><fmt:message key="userlogin.phone"/></label>

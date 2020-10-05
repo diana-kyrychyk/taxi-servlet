@@ -23,7 +23,7 @@
         <div class="col-sm-3"></div>
         <div class="col-sm-6">
             <h3><fmt:message key="order-creation.title.order-booking"/></h3>
-            <form action="/user/order-create" method="post">
+            <form action="${pageContext.request.contextPath}/user/order-create" method="post">
 
                 <div class="form-group">
                     <label>

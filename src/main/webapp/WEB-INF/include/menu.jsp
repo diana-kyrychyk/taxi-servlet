@@ -10,20 +10,20 @@
     <div class="container-fluid">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link text-white" href="/"><fmt:message key="navbar.home"/></a>
+                <a class="nav-link text-white" href="${pageContext.request.contextPath}/"><fmt:message key="navbar.home"/></a>
             </li>
             <c:if test="${sessionScope.logginedUserName != null && sessionScope.logginedUserRoles.contains('ADMIN')}">
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="/admin/user-list"><fmt:message key="navbar.userlist"/></a>
+                    <a class="nav-link text-white" href="${pageContext.request.contextPath}/admin/user-list"><fmt:message key="navbar.userlist"/></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="/admin/order-list"><fmt:message key="navbar.orders"/></a>
+                    <a class="nav-link text-white" href="${pageContext.request.contextPath}/admin/order-list"><fmt:message key="navbar.orders"/></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="/admin/car-list"><fmt:message key="navbar.carlist"/></a>
+                    <a class="nav-link text-white" href="${pageContext.request.contextPath}/admin/car-list"><fmt:message key="navbar.carlist"/></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="/admin/driver-list"><fmt:message key="navbar.driverlist"/></a>
+                    <a class="nav-link text-white" href="${pageContext.request.contextPath}/admin/driver-list"><fmt:message key="navbar.driverlist"/></a>
                 </li>
 
             </c:if>
@@ -31,18 +31,18 @@
 
         <div>
             <c:if test="${sessionScope.logginedUserName != null && sessionScope.logginedUserRoles.contains('USER')}">
-                <a class="nav-link text-white" href="/user/order-create"><fmt:message key="navbar.book"/></a>
+                <a class="nav-link text-white" href="${pageContext.request.contextPath}/user/order-create"><fmt:message key="navbar.book"/></a>
             </c:if>
 
         </div>
 
         <div style="display: flex; align-items: center;">
             <c:if test="${sessionScope.logginedUserName != null}">
-                <a class="nav-link text-white" href="/user/user-logout"><fmt:message key="navbar.logout"/></a>
+                <a class="nav-link text-white" href="${pageContext.request.contextPath}/user/user-logout"><fmt:message key="navbar.logout"/></a>
             </c:if>
             <c:if test="${sessionScope.logginedUserName == null}">
-                <a class="nav-link text-white" href="/guest/user-login"><fmt:message key="navbar.login"/></a>
-                <a class="nav-link text-white" href="/guest/user-registration"><fmt:message key="navbar.register"/></a>
+                <a class="nav-link text-white" href="${pageContext.request.contextPath}/guest/user-login"><fmt:message key="navbar.login"/></a>
+                <a class="nav-link text-white" href="${pageContext.request.contextPath}/guest/user-registration"><fmt:message key="navbar.register"/></a>
             </c:if>
 
             <div style="display: flex; flex-direction: column">
