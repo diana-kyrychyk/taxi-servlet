@@ -26,9 +26,9 @@ public class MainServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String requestURI = req.getRequestURI();
+        String path = req.getRequestURI().substring(req.getContextPath().length());
         String method = req.getMethod();
-        String controllerKey = method.concat(requestURI);
+        String controllerKey = method.concat(path);
 
         Controller controller = controllers.getOrDefault(controllerKey, (request, response) -> "/error-404.jsp");
         String page = controller.processRequest(req, resp);
@@ -36,7 +36,7 @@ public class MainServlet extends HttpServlet {
 
         if(page.startsWith(REDIRECT_PREFIX)){
             String redirectPath = page.replace(REDIRECT_PREFIX, "");
-            resp.sendRedirect(redirectPath);
+            resp.sendRedirect(req.getContextPath().concat(redirectPath));
         } else {
             req.getRequestDispatcher(page).forward(req, resp);
         }

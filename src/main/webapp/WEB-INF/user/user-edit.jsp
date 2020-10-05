@@ -21,7 +21,7 @@
         <div class="col-sm-3"></div>
         <div class="col-sm-6">
             <h2>Edit</h2>
-            <form action="/admin/user-edit" method="post">
+            <form action="${pageContext.request.contextPath}/admin/user-edit" method="post">
                 <div class="form-group">
                     <label>ID:</label>
                     <input class="form-control" id="idID" name="id" readonly="readonly" value="${userId}">

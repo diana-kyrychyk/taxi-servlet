@@ -22,7 +22,7 @@
                 <br/>
                 <br/>
                 <br/>
-                <img src="/static/images/error404.jpg"/>
+                <img src="${pageContext.request.contextPath}/static/images/error404.jpg"/>
             </div>
         </div>
         <div class="col-sm-2"></div>

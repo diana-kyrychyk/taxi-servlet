@@ -22,7 +22,7 @@
         <div class="col-sm-3"></div>
         <div class="col-sm-6">
             <h2 align="center"><fmt:message key="userregistration.registration"/></h2>
-            <form action="/guest/user-registration" method="post">
+            <form action="${pageContext.request.contextPath}/guest/user-registration" method="post">
 
                 <div class="form-group">
                     <label for="name"><fmt:message key="userregistration.name"/></label>
